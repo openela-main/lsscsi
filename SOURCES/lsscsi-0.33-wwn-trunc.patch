@@ -1,0 +1,25 @@
+From c13c9d3a90aec4779a0cbe484913f24bce947ab1 Mon Sep 17 00:00:00 2001
+From: Wenchao Hao <haowenchao@huawei.com>
+Date: Tue, 8 Jun 2021 16:26:04 +0800
+Subject: [PATCH] Fix lsscsi wwn number output error
+
+The true wwn number is from the sixth byte of scsi-*
+
+Signed-off-by: Wenchao Hao <haowenchao@huawei.com>
+---
+ src/lsscsi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/lsscsi.c b/src/lsscsi.c
+index 6f6953f..2be3ab9 100644
+--- a/src/lsscsi.c
++++ b/src/lsscsi.c
+@@ -1515,7 +1515,7 @@ collect_disk_wwn_nodes(void)
+ 
+                 cur_ent = &cur_list->nodes[cur_list->count];
+                 my_strcopy(cur_ent->wwn, "0x", 3);
+-                my_strcopy(cur_ent->wwn + 2, dep->d_name + 5,
++                my_strcopy(cur_ent->wwn + 2, dep->d_name + 6,
+                            sizeof(cur_ent->wwn) - 2);
+                 my_strcopy(cur_ent->disk_bname, basename(symlink_path),
+                            sizeof(cur_ent->disk_bname));

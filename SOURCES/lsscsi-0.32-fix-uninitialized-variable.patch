@@ -1,0 +1,34 @@
+From db8d419ba39e4547de602ef1ff58cd97d5e1102d Mon Sep 17 00:00:00 2001
+From: Tomas Bzatek <tbzatek@redhat.com>
+Date: Wed, 11 Nov 2020 15:39:16 +0100
+Subject: [PATCH] fix uninitialized variable
+
+Error: UNINIT (CWE-457): [#def1]
+lsscsi-032r164/src/lsscsi.c:3341: var_decl: Declaring variable "type" without initializer.
+lsscsi-032r164/src/lsscsi.c:3586: uninit_use_in_call: Using uninitialized value "type" when calling "is_direct_access_dev".
+  3584|                   my_strcopy(blkdir, buff, sizeof(blkdir));
+  3585|                   value[0] = 0;
+  3586|->                 if (! (is_direct_access_dev(type) &&
+  3587|                          block_scan(blkdir) &&
+  3588|                          if_directory_chdir(blkdir, ".") &&
+---
+ src/lsscsi.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/lsscsi.c b/src/lsscsi.c
+index 6544153..8a30299 100644
+--- a/src/lsscsi.c
++++ b/src/lsscsi.c
+@@ -3338,7 +3338,8 @@ one_sdev_entry(const char * dir_name, const char * devname,
+                const struct lsscsi_opts * op)
+ {
+         bool get_wwn = false;
+-        int type, n, vlen;
++        int type = 0;
++        int n, vlen;
+         int devname_len = 13;
+         char buff[LMAX_DEVPATH];
+         char extra[LMAX_DEVPATH];
+-- 
+2.26.2
+
